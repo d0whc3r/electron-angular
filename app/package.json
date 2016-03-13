@@ -1,0 +1,7 @@
+{
+  "name": "Procedimientos",
+  "private": true,
+  "description": "Procedimientos app",
+  "main": "index.js",
+  "dependencies": {}
+}

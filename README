@@ -1,0 +1,9 @@
+Templates to run electron app using angular js
+
+Based on:
+- yeoman electron generator
+- yeoman angular generator
+
+Commands:
+grunt serve
+npm run build-all

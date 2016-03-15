@@ -2,8 +2,13 @@
 const electron = require('electron');
 const app = electron.app;
 
-// report crashes to the Electron project
-require('crash-reporter').start();
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
+if (process.env.NODE_ENV === 'development') {
+  // report crashes to the Electron project
+  require('crash-reporter').start();
+  require('electron-reload')(__dirname);
+}
 
 // adds debug features like hotkeys for triggering dev tools and reload
 // require('electron-debug')();
@@ -32,7 +37,9 @@ function createMainWindow() {
   });
 
   win.loadURL(`file://${__dirname}/index.html`);
-  win.openDevTools();
+  if (process.env.NODE_ENV === 'development') {
+    win.openDevTools();
+  }
   win.on('closed', onClosed);
 
   return win;

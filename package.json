@@ -35,7 +35,8 @@
     "phantomjs-prebuilt": "^2.1.5",
     "time-grunt": "^1.0.0",
     "electron-packager": "^5.0.0",
-    "electron-prebuilt": "^0.36.0"
+    "electron-prebuilt": "^0.36.0",
+    "cross-env": "^1.0.7"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -43,10 +44,12 @@
   "electronOut": "electron-build",
   "electronVersion": "0.36.11",
   "scripts": {
-    "start": "npm run grunt-build && electron ./dist",
-    "grunt-build": "grunt build --force && ./build.sh",
-    "build": "npm run grunt-build && electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=linux --arch=x64 --version=$npm_package_electronVersion --force",
-    "build-all": "npm run grunt-build && electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --all --version=$npm_package_electronVersion --force",
+    "start": "cross-env NODE_ENV=development electron ./app",
+    "grunt-build": "grunt build --force",
+    "electron-build": "electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=linux --arch=x64 --version=$npm_package_electronVersion --overwrite",
+    "build": "npm run grunt-build && npm run electron-build",
+    "electron-build-all": "electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --all --version=$npm_package_electronVersion --overwrite",
+    "build-all": "npm run grunt-build && npm run electron-build-all",
     "test": "karma start test/karma.conf.js"
   }
 }

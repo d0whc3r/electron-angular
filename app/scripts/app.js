@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 angular
-  .module('procedimientosApp', [
+  .module('appApp', [
     'ngAnimate',
     'ngAria',
     'ngCookies',

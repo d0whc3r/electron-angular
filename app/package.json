@@ -1,7 +1,7 @@
 {
-  "name": "Procedimientos",
+  "name": "app",
   "private": true,
-  "description": "Procedimientos app",
+  "description": "test app",
   "main": "index.js",
   "dependencies": {}
 }

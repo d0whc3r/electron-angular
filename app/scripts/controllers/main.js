@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the procedimientosApp
  */
-angular.module('procedimientosApp')
+angular.module('appApp')
   .controller('MainCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',

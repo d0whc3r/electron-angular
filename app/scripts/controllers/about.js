@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc function
- * @name procedimientosApp.controller:AboutCtrl
+ * @name appApp.controller:AboutCtrl
  * @description
  * # AboutCtrl
- * Controller of the procedimientosApp
+ * Controller of the appApp
  */
 angular.module('appApp')
   .controller('AboutCtrl', function () {

@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc function
- * @name procedimientosApp.controller:MainCtrl
+ * @name appApp.controller:MainCtrl
  * @description
  * # MainCtrl
- * Controller of the procedimientosApp
+ * Controller of the appApp
  */
 angular.module('appApp')
   .controller('MainCtrl', function () {

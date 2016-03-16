@@ -2,9 +2,9 @@
 
 /**
  * @ngdoc overview
- * @name procedimientosApp
+ * @name appApp
  * @description
- * # procedimientosApp
+ * # appApp
  *
  * Main module of the application.
  */

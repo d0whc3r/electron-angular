@@ -163,7 +163,8 @@ module.exports = function(grunt) {
           src: [
             '.tmp',
             '<%= yeoman.dist %>/{,*/}*',
-            '!<%= yeoman.dist %>/.git{,*/}*'
+            '!<%= yeoman.dist %>/.git{,*/}*',
+            'electron-build/*'
           ]
         }]
       },
@@ -511,7 +512,8 @@ module.exports = function(grunt) {
       'wiredep',
       'concurrent:server',
       'postcss:server',
-      'connect:livereload',
+      // Disable launch browser
+      // 'connect:livereload',
       'concurrent:watch'
     ]);
   });

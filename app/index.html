@@ -8,11 +8,11 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/animate.css/animate.css" />
-    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="bower_components/sanitize-css/sanitize.css" />
-    <link rel="stylesheet" href="bower_components/normalize-css/normalize.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="bower_components/animate.css/animate.css"/>
+    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="bower_components/sanitize-css/sanitize.css"/>
+    <link rel="stylesheet" href="bower_components/normalize-css/normalize.css"/>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -20,6 +20,14 @@
     <!-- endbuild -->
   </head>
   <body>
+
+    <div class="loading">
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+      <div class="loading-bar"></div>
+    </div>
+
     <!--[if lte IE 8]> <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p> <![endif]-->
 
     <!-- Add your site or application content here -->
@@ -57,7 +65,7 @@
     </div>
 
     <div class="well">
-        <div class="container" ng-view=""></div>
+      <div class="container" ng-view=""></div>
     </div>
 
     <div class="footer">

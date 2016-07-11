@@ -9,25 +9,24 @@
  * Main module of the application.
  */
 angular
-  .module('appApp', [
+  .module('procedimientosApp', [
     'ngAnimate',
     'ngAria',
     'ngCookies',
     'ngMessages',
     'ngResource',
     'ngRoute',
-    'ngSanitize',
-    'ngTouch'
-  ])
+    'ngSanitize'
+    ])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/main.html',
+        templateUrl: 'scripts/mainpage/main.html',
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
       .when('/about', {
-        templateUrl: 'views/about.html',
+        templateUrl: 'scripts/aboutpage/about.html',
         controller: 'AboutCtrl',
         controllerAs: 'about'
       })

@@ -1,6 +1,11 @@
 /node_modules
 /dist
+/dist-electron
 /.tmp
 /.sass-cache
 /bower_components
-/electron-build
+/app/node_modules
+/sql
+/pdfs
+/npm-debug.log
+/app/npm-debug.log

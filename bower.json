@@ -1,28 +1,40 @@
 {
-  "name": "app",
-  "version": "0.0.0",
+  "name": "Procedimientos",
+  "private": true,
   "dependencies": {
-    "angular": "^1.5.2",
+    "angular": "^1.*",
     "bootstrap": "^3.*",
-    "angular-animate": "^1.5.2",
-    "angular-aria": "^1.5.2",
-    "angular-cookies": "^1.5.2",
-    "angular-messages": "^1.5.2",
-    "angular-resource": "^1.5.2",
-    "angular-route": "^1.5.2",
-    "angular-sanitize": "^1.5.2",
-    "angular-touch": "^1.5.2",
-    "animate.css": "*",
+    "angular-animate": "^1.*",
+    "angular-aria": "^1.*",
+    "angular-cookies": "^1.*",
+    "angular-messages": "^1.*",
+    "ng-notify": "*",
+    "angular-i18n": "*",
+    "angular-dynamic-locale": "*",
+    "angular-resource": "^1.*",
+    "angular-route": "^1.*",
+    "angular-sanitize": "^1.*",
+    "angular-translate": "*",
+    "angular-translate-loader-static-files": "*",
+    "angular-translate-storage-cookie": "*",
+    "angular-translate-storage-local": "*",
+    "angular-recursion": "*",
+    "angular-file-upload": "*",
     "font-awesome": "*",
+    "animate.css": "*",
     "components-font-awesome": "*",
     "sanitize-css": "*",
-    "normalize-css": "normalize.css#*"
+    "normalize-css": "normalize.css#*",
+    "angular-local-storage": "*",
+    "ng-dialog": "*",
+    "angular-smart-table": "*",
+    "awesome-bootstrap-checkbox": "*"
   },
   "devDependencies": {
-    "angular-mocks": "^1.5.2"
+    "angular-mocks": "^1.*"
   },
   "appPath": "app",
-  "moduleName": "appApp",
+  "moduleName": "procedimientosApp",
   "overrides": {
     "bootstrap": {
       "main": [

@@ -1,20 +1,15 @@
 'use strict';
 const electron = require('electron');
-const app = electron.app;
+const electronapp = electron.app;
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
-if (process.env.NODE_ENV === 'development') {
-  // report crashes to the Electron project
-  require('crash-reporter').start();
+if(process.env.NODE_ENV === 'development') {
   require('electron-reload')(__dirname);
 }
 
-// adds debug features like hotkeys for triggering dev tools and reload
-// require('electron-debug')();
-
 // prevent window being garbage collected
-let mainWindow;
+var mainWindow;
 
 function onClosed() {
   // dereference the window
@@ -24,10 +19,10 @@ function onClosed() {
 
 function createMainWindow() {
   const win = new electron.BrowserWindow({
-    width: 1500,
-    minWidth: 1500,
-    height: 800,
-    minHeight: 800,
+    width: 1250,
+    height: 875,
+    minWidth: 1000,
+    minHeight: 600,
     center: true,
     resizable: true,
     minimizable: true,
@@ -36,8 +31,8 @@ function createMainWindow() {
     fullscreenable: true
   });
 
-  win.loadURL(`file://${__dirname}/index.html`);
-  if (process.env.NODE_ENV === 'development') {
+  win.loadURL('file://' + __dirname + '/index.html');
+  if(process.env.NODE_ENV === 'development') {
     win.openDevTools();
   }
   win.on('closed', onClosed);
@@ -45,18 +40,18 @@ function createMainWindow() {
   return win;
 }
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+electronapp.on('window-all-closed', function() {
+  if(process.platform !== 'darwin') {
+    electronapp.quit();
   }
 });
 
-app.on('activate', () => {
-  if (!mainWindow) {
+electronapp.on('activate', function() {
+  if(!mainWindow) {
     mainWindow = createMainWindow();
   }
 });
 
-app.on('ready', () => {
+electronapp.on('ready', function() {
   mainWindow = createMainWindow();
 });

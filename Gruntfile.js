@@ -1,4 +1,4 @@
-// Generated on 2016-03-11 using generator-angular 0.15.1
+// Generated on 2016-07-11 using generator-angular 0.15.1
 'use strict';
 
 // # Globbing
@@ -16,7 +16,8 @@ module.exports = function(grunt) {
   require('jit-grunt')(grunt, {
     useminPrepare: 'grunt-usemin',
     ngtemplates: 'grunt-angular-templates',
-    cdnify: 'grunt-google-cdn'
+    cdnify: 'grunt-google-cdn',
+    cssmin: 'grunt-contrib-cssmin'
   });
 
   // Configurable paths for the application
@@ -70,10 +71,10 @@ module.exports = function(grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9000,
+        port: 9005,
         // Change this to '0.0.0.0' to access the server from outside.
         hostname: 'localhost',
-        livereload: 35729
+        livereload: 35719
       },
       livereload: {
         options: {
@@ -164,7 +165,7 @@ module.exports = function(grunt) {
             '.tmp',
             '<%= yeoman.dist %>/{,*/}*',
             '!<%= yeoman.dist %>/.git{,*/}*',
-            'electron-build/*'
+            'dist-electron'
           ]
         }]
       },
@@ -189,11 +190,6 @@ module.exports = function(grunt) {
           cwd: '.tmp/styles/',
           src: '{,*/}*.css',
           dest: '.tmp/styles/'
-        }, {
-          expand: true,
-          cwd: '.tmp/styles/',
-          src: '{,*/}*.css',
-          dest: '<%= yeoman.app %>/styles/'
         }]
       },
       dist: {
@@ -227,10 +223,10 @@ module.exports = function(grunt) {
             }
           }
         }
-      },
-      sass: {
-        src: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
+        // },
+        // sass: {
+        //   src: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+        //   ignorePath: /(\.\.\/){1,2}bower_components\//
       }
     },
 
@@ -238,7 +234,8 @@ module.exports = function(grunt) {
     compass: {
       options: {
         sassDir: '<%= yeoman.app %>/styles',
-        cssDir: '.tmp/styles',
+        cssDir: ['.tmp/styles', '<%= yeoman.app %>/styles'],
+        // cssDir: '.tmp/styles',
         generatedImagesDir: '.tmp/images/generated',
         imagesDir: '<%= yeoman.app %>/images',
         javascriptsDir: '<%= yeoman.app %>/scripts',
@@ -318,25 +315,38 @@ module.exports = function(grunt) {
     // minification. These next options are pre-configured if you do not wish
     // to use the Usemin blocks.
     cssmin: {
+      options: {
+        shorthandCompacting: false,
+        roundingPrecision: -1
+      },
       dist: {
         files: {
           '<%= yeoman.dist %>/styles/main.css': [
-            '.tmp/styles/{,*/}*.css'
+            '<%= yeoman.app %>/styles/**/*.css'
           ]
         }
       }
     },
-    uglify: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts/scripts.js'
-          ]
-        }
-      }
-    },
+    // uglify: {
+    //   options: {
+    //     compress: true,
+    //     mangle: true,
+    //     sourceMap: false
+    //   },
+    //   dist: {
+    //     files: {
+    //       '<%= yeoman.dist %>/scripts/scripts.js': [
+    //         '.tmp/**/*.js'
+    //       ]
+    //     }
+    //   }
+    // },
     concat: {
-      dist: {}
+      dist: {
+        options: {
+          separator: ';'
+        }
+      }
     },
 
     imagemin: {
@@ -381,12 +391,13 @@ module.exports = function(grunt) {
     ngtemplates: {
       dist: {
         options: {
-          module: 'appApp',
+          module: 'procedimientosApp',
           htmlmin: '<%= htmlmin.dist.options %>',
           usemin: 'scripts/scripts.js'
         },
         cwd: '<%= yeoman.app %>',
-        src: 'views/{,*/}*.html',
+        // src: 'views/{,*/}*.html',
+        src: 'scripts/**/*.html',
         dest: '.tmp/templateCache.js'
       }
     },
@@ -394,6 +405,9 @@ module.exports = function(grunt) {
     // ng-annotate tries to make the code safe for minification automatically
     // by using the Angular long form for dependency injection.
     ngAnnotate: {
+      options: {
+        singleQuotes: true
+      },
       dist: {
         files: [{
           expand: true,
@@ -433,13 +447,32 @@ module.exports = function(grunt) {
         }, {
           expand: true,
           cwd: '.',
-          src: ['bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*', 'bower_components/jquery/dist/jquery.min.js'],
+          src: [
+            'bower_components/jquery/dist/jquery.min.js',
+            'bower_components/angular-i18n/angular-locale_ca.js',
+            'bower_components/angular-i18n/angular-locale_es.js',
+          ],
           dest: '<%= yeoman.dist %>'
         }, {
           expand: true,
           cwd: '<%= yeoman.app %>',
-          src: ['index.js', 'package.json'],
+          src: [
+            'package.json',
+            'index.js',
+            'i18n/**',
+            'sql/database.sql',
+            'sql/functions/*.sql',
+            'sql/procedures/*.sql',
+            'node_modules/sqlite3/**',
+            'node_modules/html-pdf/**',
+            'node_modules/phantomjs-prebuilt/**',
+          ],
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'bower_components/bootstrap/fonts/',
+          src: ['*'],
+          dest: '<%= yeoman.dist %>/fonts/'
         }]
       },
       styles: {
@@ -464,7 +497,9 @@ module.exports = function(grunt) {
         'svgmin'
       ],
       watch: {
-        tasks: ['watch', 'run:electron'],
+        tasks: ['watch',
+          'run:electron',
+        ],
         options: {
           limit: 3,
           logConcurrentOutput: true
@@ -486,17 +521,19 @@ module.exports = function(grunt) {
         args: [
           'node_modules/cross-env/bin/cross-env.js',
           'NODE_ENV=development',
-          'electron',
+          // 'electron',
+          './node_modules/.bin/electron',
           '<%= yeoman.app %>'
-        ],
+        ]
       },
       electronprod: {
         args: [
           'node_modules/cross-env/bin/cross-env.js',
-          'NODE_ENV=production',
-          'electron',
+          'NODE_ENV=development',
+          // 'electron',
+          './node_modules/.bin/electron',
           '<%= yeoman.dist %>'
-        ],
+        ]
       }
     }
   });
@@ -512,9 +549,8 @@ module.exports = function(grunt) {
       'wiredep',
       'concurrent:server',
       'postcss:server',
-      // Disable launch browser
       // 'connect:livereload',
-      'concurrent:watch'
+      'concurrent:watch',
     ]);
   });
 

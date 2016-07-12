@@ -81,17 +81,18 @@ module.exports = function(grunt) {
         options: {
           open: true,
           middleware: function(connect) {
+            var serveStatic = require('serve-static');
             return [
-              connect.static('.tmp'),
+              serveStatic('.tmp'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
               connect().use(
                 '/app/styles',
-                connect.static('./app/styles')
+                serveStatic('./app/styles')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
@@ -100,14 +101,15 @@ module.exports = function(grunt) {
         options: {
           port: 9001,
           middleware: function(connect) {
+            var serveStatic = require('serve-static');
             return [
-              connect.static('.tmp'),
-              connect.static('test'),
+              serveStatic('.tmp'),
+              serveStatic('test'),
               connect().use(
                 '/bower_components',
-                connect.static('./bower_components')
+                serveStatic('./bower_components')
               ),
-              connect.static(appConfig.app)
+              serveStatic(appConfig.app)
             ];
           }
         }
@@ -588,7 +590,7 @@ module.exports = function(grunt) {
       'injector',
       'concurrent:server',
       'postcss:server',
-      // 'connect:livereload',
+      'connect:livereload',
       'concurrent:watch',
     ]);
   });

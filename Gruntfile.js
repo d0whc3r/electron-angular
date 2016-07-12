@@ -17,7 +17,8 @@ module.exports = function(grunt) {
     useminPrepare: 'grunt-usemin',
     ngtemplates: 'grunt-angular-templates',
     cdnify: 'grunt-google-cdn',
-    cssmin: 'grunt-contrib-cssmin'
+    cssmin: 'grunt-contrib-cssmin',
+    injector: 'grunt-injector'
   });
 
   // Configurable paths for the application
@@ -36,7 +37,7 @@ module.exports = function(grunt) {
     watch: {
       bower: {
         files: ['bower.json'],
-        tasks: ['wiredep']
+        tasks: ['wiredep', 'injector']
       },
       js: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
@@ -535,6 +536,47 @@ module.exports = function(grunt) {
           '<%= yeoman.dist %>'
         ]
       }
+    },
+
+    // Inject custom js and scss files
+    injector: {
+      target: {
+        options: {
+          relative: true
+        },
+        files: {
+          '<%= yeoman.app %>/index.html': ['<%= yeoman.app %>/scripts/*/**/*.js'],
+        }
+      },
+      sass: {
+        options: {
+          starttag: '// <!-- injector:{{ext}} -->',
+          endtag: '// <!-- endinjector -->',
+          relative: true,
+          ignorePath: 'main.scss',
+          transform: function(filepath) {
+            var file = filepath.split('/').slice(-1)[0];
+            // remove extension
+            file = file.split('.').slice(0, -1).join('.');
+            // remove "_"
+            if (file.substr(0, 1) === '_') {
+              file = file.substr(1);
+            }
+            var path = filepath.split('/').slice(0, -1).join('/') + '/';
+            if (path === '/') {
+              path = '';
+            }
+            var fpath = path + file;
+            if (!fpath) {
+              return;
+            }
+            return '@import \'' + fpath + '\';'
+          }
+        },
+        files: {
+          '<%= yeoman.app %>/styles/main.scss': ['<%= yeoman.app %>/styles/**/*.scss', '<%= yeoman.app %>/scripts/**/*.scss'],
+        }
+      }
     }
   });
 
@@ -547,6 +589,7 @@ module.exports = function(grunt) {
     grunt.task.run([
       'clean:server',
       'wiredep',
+      'injector',
       'concurrent:server',
       'postcss:server',
       // 'connect:livereload',
@@ -562,6 +605,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test', [
     'clean:server',
     'wiredep',
+    'injector',
     'concurrent:test',
     'postcss',
     'connect:test',
@@ -571,6 +615,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
+    'injector',
     'useminPrepare',
     'concurrent:dist',
     'postcss',

@@ -24,10 +24,12 @@
     "grunt-contrib-watch": "^1.0",
     "grunt-filerev": "^2.1",
     "grunt-google-cdn": "^0.4",
+    "grunt-injector": "^1.0",
     "grunt-jscs": "^1.8",
     "grunt-newer": "^1.1",
     "grunt-ng-annotate": "^1.0",
     "grunt-postcss": "^0.8",
+    "grunt-run": "*",
     "grunt-svgmin": "^2.0",
     "grunt-usemin": "^3.0",
     "grunt-wiredep": "^2.0",
@@ -38,8 +40,7 @@
     "karma-jasmine": "^1.0",
     "karma-phantomjs-launcher": "^1.0",
     "phantomjs-prebuilt": "^2.1",
-    "time-grunt": "^1.0",
-    "grunt-run": "*"
+    "time-grunt": "^1.0"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -53,12 +54,11 @@
     "electron-build": "./node_modules/.bin/electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=linux --arch=x64 --version=$npm_package_electronVersion --overwrite",
     "electron-build-win": "./node_modules/.bin/electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=win32 --arch=x64 --version=$npm_package_electronVersion --overwrite",
     "electron-app-build": "./node_modules/.bin/electron-packager ./app $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=linux --arch=x64 --version=$npm_package_electronVersion --overwrite",
-    "build": "npm run grunt-build && npm run electron-build && npm run copysrc",
-    "build-win": "npm run grunt-build && npm run electron-build-win && npm run copysrc",
+    "build": "npm run grunt-build && npm run electron-build",
+    "build-win": "npm run grunt-build && npm run electron-build-win",
     "electron-build-all": "./node_modules/.bin/electron-packager ./dist $npm_package_name --out=$npm_package_electronOut --prune --asar --platform=linux,win32 --arch=ia32,x64 --version=$npm_package_electronVersion --overwrite",
-    "build-all": "npm run grunt-build && npm run electron-build-all && npm run copysrc",
+    "build-all": "npm run grunt-build && npm run electron-build-all",
     "test": "./node_modules/.bin/karma start test/karma.conf.js",
-    "copysrc": "find $npm_package_electronOut/ -name 'resources' -exec ./copysrc.sh {} \\; ",
     "rebuild-app": "./node_modules/.bin/electron-rebuild --version $npm_package_electronVersion --module-dir app/node_modules/ -f -p",
     "rebuild-node": "./node_modules/.bin/electron-rebuild --version $npm_package_electronVersion --module-dir ./node_modules/ -f -p",
     "rebuild": "npm run rebuild-node && npm run rebuild-app"

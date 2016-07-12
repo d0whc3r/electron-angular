@@ -5,7 +5,5 @@
 /.sass-cache
 /bower_components
 /app/node_modules
-/sql
-/pdfs
 /npm-debug.log
 /app/npm-debug.log

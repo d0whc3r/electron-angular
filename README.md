@@ -3,6 +3,12 @@
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
 version 0.15.1.
 
+## Install dependencies
+
+Run `npm install && bower install`
+
+Run `cd app && npm install` (dependencies used in electron)
+
 ## Build & development
 
 Run `grunt` for building and `grunt serve` for preview.

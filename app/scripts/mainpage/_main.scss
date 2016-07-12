@@ -1,1 +1,5 @@
-li { background: green; }
+$color-green: #008000;
+
+li {
+  background: $color-green;
+}

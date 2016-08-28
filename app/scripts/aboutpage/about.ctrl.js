@@ -3,13 +3,13 @@
 
   /**
    * @ngdoc function
-   * @name procedimientosApp.controller:MainCtrl
+   * @name electronApp.controller:AboutCtrl
    * @description
-   * # MainCtrl
-   * Controller of the procedimientosApp
+   * # AboutCtrl
+   * Controller of the electronApp
    */
-  angular.module('procedimientosApp')
-    .controller('MainCtrl', function() {
+  angular.module('electronApp')
+    .controller('AboutCtrl', function() {
       this.awesomeThings = [
         'HTML5 Boilerplate',
         'AngularJS',

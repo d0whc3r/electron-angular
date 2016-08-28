@@ -1,7 +1,6 @@
 {
-  "name": "procedimientosApp",
+  "name": "electronApp",
   "private": true,
-  "description": "procedimientos app",
   "main": "index.js",
   "dependencies": {
     "html-pdf": "*",

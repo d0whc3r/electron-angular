@@ -24,3 +24,5 @@ Running `grunt test` will run the unit tests with karma.
 `npm run rebuild`: to solve some problems in deploy with sqlite3 module and nodejs
 
 `npm run build-all`: build electron executables in dist-electron folder
+
+`npm run installer`: build electron executables in release folder

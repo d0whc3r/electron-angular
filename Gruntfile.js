@@ -1,4 +1,3 @@
-// Generated on 2016-07-11 using generator-angular 0.15.1
 'use strict';
 
 // # Globbing
@@ -8,7 +7,6 @@
 // 'test/spec/**/*.js'
 
 module.exports = function(grunt) {
-
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
@@ -18,14 +16,22 @@ module.exports = function(grunt) {
     ngtemplates: 'grunt-angular-templates',
     cdnify: 'grunt-google-cdn',
     cssmin: 'grunt-contrib-cssmin',
-    injector: 'grunt-injector'
+    injector: 'grunt-injector',
+    jsObfuscate: 'js-obfuscator',
+    'merge-json': 'grunt-merge-json-xduplicate',
+    release: 'grunt-release'
   });
 
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
-    dist: 'dist'
+    dist: 'dist',
+    version: require('./package.json').version || '0.0.1',
+    name: require('./package.json').name || 'electronApp'
   };
+
+  var compilerPackage = require('google-closure-compiler');
+  compilerPackage.grunt(grunt);
 
   // Define the configuration for all the tasks
   grunt.initConfig({
@@ -40,19 +46,31 @@ module.exports = function(grunt) {
         tasks: ['wiredep', 'injector']
       },
       js: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all', 'newer:jscs:all'],
+        files: ['<%= yeoman.app %>/scripts/**/*.js'],
+        tasks: ['injector:js', 'newer:jshint:all', 'newer:jscs:all', 'release:prerelease'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
+      },
+      translate: {
+        files: [
+          '<%= yeoman.app %>/scripts/**/locale-*.json',
+          '<%= yeoman.app %>/i18n/locale-*.json'
+        ],
+        tasks: ['merge-json', 'release:prerelease']
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
         tasks: ['newer:jshint:test', 'newer:jscs:test', 'karma']
       },
       compass: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['compass:server', 'postcss:server']
+        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}', '<%= yeoman.app %>/scripts/**/*.{scss,sass}'],
+        tasks: [
+          'injector:sass',
+          'compass:server',
+          'postcss:server',
+          'release:prerelease'
+        ]
       },
       gruntfile: {
         files: ['Gruntfile.js']
@@ -61,10 +79,13 @@ module.exports = function(grunt) {
         options: {
           livereload: '<%= connect.options.livereload %>'
         },
+        tasks: ['release:prerelease'],
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
+          '<%= yeoman.app %>/scripts/**/*.html',
           '.tmp/styles/{,*/}*.css',
-          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+          '<%= yeoman.app %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= yeoman.app %>/scripts/**/*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
     },
@@ -166,13 +187,26 @@ module.exports = function(grunt) {
           dot: true,
           src: [
             '.tmp',
+            '.sass-cache',
+            '<%= yeoman.app %>/styles/main.css*',
+            '<%= yeoman.app %>/i18n/locale_parse-*.json',
             '<%= yeoman.dist %>/{,*/}*',
             '!<%= yeoman.dist %>/.git{,*/}*',
             'dist-electron'
           ]
         }]
       },
-      server: '.tmp'
+      server: {
+        files: [{
+          dot: true,
+          src: [
+            '.tmp',
+            '.sass-cache',
+            '<%= yeoman.app %>/styles/main.css*',
+            '<%= yeoman.app %>/i18n/locale_parse-*.json'
+          ]
+        }]
+      }
     },
 
     // Add vendor prefixed styles
@@ -193,6 +227,7 @@ module.exports = function(grunt) {
           cwd: '.tmp/styles/',
           src: '{,*/}*.css',
           dest: '.tmp/styles/'
+            // dest: '<%= yeoman.dist %>/styles/'
         }]
       },
       dist: {
@@ -201,6 +236,7 @@ module.exports = function(grunt) {
           cwd: '.tmp/styles/',
           src: '{,*/}*.css',
           dest: '.tmp/styles/'
+            // dest: '<%= yeoman.dist %>/styles/'
         }]
       }
     },
@@ -226,6 +262,10 @@ module.exports = function(grunt) {
             }
           }
         }
+        // },
+        // sass: {
+        //   src: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+        //   ignorePath: /(\.\.\/){1,2}bower_components\//
       }
     },
 
@@ -236,7 +276,8 @@ module.exports = function(grunt) {
         cssDir: ['.tmp/styles', '<%= yeoman.app %>/styles'],
         // cssDir: '.tmp/styles',
         generatedImagesDir: '.tmp/images/generated',
-        imagesDir: '<%= yeoman.app %>/images',
+        imagesDir: ['<%= yeoman.app %>/images', '<%= yeoman.app %>/scripts'],
+        // imagesDir: '<%= yeoman.app %>/images',
         javascriptsDir: '<%= yeoman.app %>/scripts',
         fontsDir: '<%= yeoman.app %>/styles/fonts',
         importPath: './bower_components',
@@ -263,10 +304,11 @@ module.exports = function(grunt) {
     filerev: {
       dist: {
         src: [
-          '<%= yeoman.dist %>/scripts/{,*/}*.js',
+          '<%= yeoman.dist %>/scripts/**/*.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
-          '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-          '<%= yeoman.dist %>/styles/fonts/*'
+          '<%= yeoman.dist %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= yeoman.dist %>/styles/fonts/**',
+          '<%= yeoman.dist %>/scripts/**/*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
     },
@@ -294,16 +336,22 @@ module.exports = function(grunt) {
     usemin: {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      js: ['<%= yeoman.dist %>/scripts/{,*/}*.js'],
+      js: ['<%= yeoman.dist %>/scripts/**/*.js'],
       options: {
         assetsDirs: [
           '<%= yeoman.dist %>',
           '<%= yeoman.dist %>/images',
+          '<%= yeoman.dist %>/scripts/**/',
           '<%= yeoman.dist %>/styles'
         ],
         patterns: {
           js: [
-            [/(images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg))/g, 'Replacing references to images']
+            [/(images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg))/g, 'Replacing references to images'],
+            [
+              /["']([^:"']+\.(?:png|gif|jpe?g|css|js))["']/img,
+              'Update JavaScript with assets in strings'
+            ],
+            [/((\/)*images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg))/g, 'Replacing references to images']
           ]
         }
       }
@@ -314,32 +362,35 @@ module.exports = function(grunt) {
     // minification. These next options are pre-configured if you do not wish
     // to use the Usemin blocks.
     cssmin: {
-      options: {
-        shorthandCompacting: false,
-        roundingPrecision: -1
-      },
       dist: {
         files: {
           '<%= yeoman.dist %>/styles/main.css': [
             '<%= yeoman.app %>/styles/**/*.css'
           ]
+        },
+        options: {
+          shorthandCompacting: false,
+          roundingPrecision: -1
+        }
+        // ,
+        // dest: '<%= yeoman.dist %>/styles/main.css',
+        // src: '<%= yeoman.app %>/styles/{,*/}*.css'
+      }
+    },
+    uglify: {
+      options: {
+        compress: true,
+        mangle: true,
+        sourceMap: false
+      },
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '.tmp/**/*.js'
+          ]
         }
       }
     },
-    // uglify: {
-    //   options: {
-    //     compress: true,
-    //     mangle: true,
-    //     sourceMap: false
-    //   },
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '.tmp/**/*.js'
-    //       ]
-    //     }
-    //   }
-    // },
     concat: {
       dist: {
         options: {
@@ -353,8 +404,13 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.{png,jpg,jpeg,gif}',
+          src: '**/*.{png,jpg,jpeg,gif}',
           dest: '<%= yeoman.dist %>/images'
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts',
+          src: '**/*.{png,jpg,jpeg,gif}',
+          dest: '<%= yeoman.dist %>/scripts'
         }]
       }
     },
@@ -364,8 +420,13 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.svg',
+          src: '**/*.svg',
           dest: '<%= yeoman.dist %>/images'
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts',
+          src: '**/*.{png,jpg,jpeg,gif}',
+          dest: '<%= yeoman.dist %>/scripts'
         }]
       }
     },
@@ -390,7 +451,7 @@ module.exports = function(grunt) {
     ngtemplates: {
       dist: {
         options: {
-          module: 'procedimientosApp',
+          module: 'electronApp',
           htmlmin: '<%= htmlmin.dist.options %>',
           usemin: 'scripts/scripts.js'
         },
@@ -413,6 +474,7 @@ module.exports = function(grunt) {
           cwd: '.tmp/concat/scripts',
           src: '*.js',
           dest: '.tmp/concat/scripts'
+            // dest: '<%= yeoman.dist %>/scripts'
         }]
       }
     },
@@ -433,10 +495,12 @@ module.exports = function(grunt) {
           cwd: '<%= yeoman.app %>',
           dest: '<%= yeoman.dist %>',
           src: [
+            'icons/*.{ico,png}',
             '*.{ico,png,txt}',
             '*.html',
-            'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            'images/**/*.{webp}',
+            'scripts/**/*.{webp}',
+            'styles/fonts/**/*.*'
           ]
         }, {
           expand: true,
@@ -447,29 +511,28 @@ module.exports = function(grunt) {
           expand: true,
           cwd: '.',
           src: [
-            'bower_components/jquery/dist/jquery.min.js',
             'bower_components/angular-i18n/angular-locale_ca.js',
             'bower_components/angular-i18n/angular-locale_es.js',
+            'bower_components/jquery/dist/jquery.min.js',
           ],
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'dist-node_modules',
+          dest: '<%= yeoman.dist %>/node_modules',
+          src: ['sqlite3/**']
         }, {
           expand: true,
           cwd: '<%= yeoman.app %>',
           src: [
             'package.json',
             'index.js',
-            'i18n/**',
-            'sql/database.sql',
-            'sql/functions/*.sql',
-            'sql/procedures/*.sql',
-            'node_modules/sqlite3/**',
-            'node_modules/html-pdf/**',
-            'node_modules/phantomjs-prebuilt/**',
+            'i18n/locale_parse-*.json'
           ],
           dest: '<%= yeoman.dist %>'
         }, {
           expand: true,
-          cwd: 'bower_components/bootstrap/fonts/',
+          cwd: 'bower_components/mdi/fonts/',
           src: ['*'],
           dest: '<%= yeoman.dist %>/fonts/'
         }]
@@ -485,15 +548,17 @@ module.exports = function(grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'compass:server'
+        // 'compass:server'
+        'compass'
       ],
       test: [
         'compass'
       ],
       dist: [
-        'compass:dist',
-        'imagemin',
-        'svgmin'
+        // 'compass:dist',
+        'compass',
+        'imagemin'
+        // 'svgmin'
       ],
       watch: {
         tasks: ['watch',
@@ -520,7 +585,6 @@ module.exports = function(grunt) {
         args: [
           'node_modules/cross-env/bin/cross-env.js',
           'NODE_ENV=development',
-          // 'electron',
           './node_modules/.bin/electron',
           '<%= yeoman.app %>'
         ]
@@ -529,21 +593,46 @@ module.exports = function(grunt) {
         args: [
           'node_modules/cross-env/bin/cross-env.js',
           'NODE_ENV=development',
-          // 'electron',
           './node_modules/.bin/electron',
           '<%= yeoman.dist %>'
+        ]
+      },
+      installer32: {
+        args: [
+          'node_modules/innosetup-compiler/lib/iscc',
+          '--DMyArch=ia32',
+          '--DMySourcePath=dist-electron/electronApp-win32-ia32',
+          '--DMyAppVersion=<%= yeoman.version %>',
+          '--DMyAppName=<%= yeoman.name %>',
+          'installer-win.iss',
+        ]
+      },
+      installer64: {
+        args: [
+          'node_modules/cross-env/bin/cross-env.js',
+          //'NODE_ENV=development',
+          'innosetup-compiler',
+          '--DMyArch=x64',
+          '--DMySourcePath=dist-electron/electronApp-win32-x64',
+          '--DMyAppVersion=<%= yeoman.version %>',
+          '--DMyAppName=<%= yeoman.name %>',
+          'installer-win.iss',
         ]
       }
     },
 
     // Inject custom js and scss files
     injector: {
-      target: {
+      js: {
         options: {
           relative: true
         },
         files: {
-          '<%= yeoman.app %>/index.html': ['<%= yeoman.app %>/scripts/*/**/*.js'],
+          '<%= yeoman.app %>/index.html': [
+            '<%= yeoman.app %>/scripts/*/**/*.js',
+            '!<%= yeoman.app %>/scripts/*/**/*.exclude.js',
+            '!<%= yeoman.app %>/scripts/*/**/*.exclude/**'
+          ],
         }
       },
       sass: {
@@ -568,16 +657,175 @@ module.exports = function(grunt) {
             if (!fpath) {
               return;
             }
-            return '@import \'' + fpath + '\';'
+            return '@import \'' + fpath + '\';';
           }
         },
         files: {
-          '<%= yeoman.app %>/styles/main.scss': ['<%= yeoman.app %>/styles/**/*.scss', '<%= yeoman.app %>/scripts/**/*.scss'],
+          '<%= yeoman.app %>/styles/main.scss': [
+            '<%= yeoman.app %>/styles/**/*.scss',
+            '<%= yeoman.app %>/scripts/**/*.scss',
+            '!<%= yeoman.app %>/scripts/**/*.exclude.scss',
+            '!<%= yeoman.app %>/scripts/*/**/*.exclude/**'
+          ],
         }
       }
-    }
+    },
+
+    // Obfuscator
+    jsObfuscate: {
+      scripts: {
+        options: {
+          concurrency: 2,
+          keepLinefeeds: false,
+          keepIndentations: false,
+          encodeStrings: true,
+          encodeNumbers: true,
+          moveStrings: true,
+          replaceNames: true,
+          variableExclusions: ['^_get_', '^_set_', '^_mtd_', '^_angular_']
+        },
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
+          ]
+        }
+      },
+      vendor: {
+        options: {
+          concurrency: 2,
+          keepLinefeeds: false,
+          keepIndentations: false,
+          encodeStrings: true,
+          encodeNumbers: true,
+          moveStrings: true,
+          replaceNames: true,
+          variableExclusions: ['^_get_', '^_set_', '^_mtd_', '^_angular_']
+        },
+        files: {
+          '<%= yeoman.dist %>/scripts/vendor.js': [
+            '<%= yeoman.dist %>/scripts/vendor.js'
+          ]
+        }
+      }
+    },
+
+    // Closure compiler
+    'closure-compiler': {
+      scripts: {
+        files: {
+          '<%= yeoman.dist %>/scripts/scripts.js': [
+            '<%= yeoman.dist %>/scripts/scripts.js'
+          ]
+        },
+        options: {
+          // js: '/node_modules/google-closure-library/**.js',
+          debug: false,
+          externs: [
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/jquery-1.9.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5-q_templated.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5-resource.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-material.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/ui-bootstrap.js'
+          ],
+          compilation_level: 'SIMPLE',
+          manage_closure_dependencies: true,
+          // language_in: 'ECMASCRIPT5_STRICT',
+          // create_source_map: '<%= yeoman.dist %>/scripts/scripts.min.js.map',
+          output_wrapper: '(function(){\n%output%\n}).call(this);'
+        }
+      },
+      vendor: {
+        files: {
+          '<%= yeoman.dist %>/scripts/vendor.js': [
+            '<%= yeoman.dist %>/scripts/vendor.js'
+          ]
+        },
+        options: {
+          // js: '/node_modules/google-closure-library/**.js',
+          debug: false,
+          externs: [
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/jquery-1.9.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5-q_templated.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-1.5-resource.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/angular-material.js',
+            compilerPackage.compiler.CONTRIB_PATH + '/externs/ui-bootstrap.js'
+          ],
+          compilation_level: 'SIMPLE',
+          manage_closure_dependencies: true,
+          // language_in: 'ECMASCRIPT5_STRICT',
+          // create_source_map: '<%= yeoman.dist %>/scripts/vendor.min.js.map',
+          output_wrapper: '(function(){\n%output%\n}).call(this);'
+        }
+      }
+    },
+
+    // Merge json translate files
+    'merge-json': {
+      'i18n': {
+        files: {
+          '<%= yeoman.app %>/i18n/locale_parse-es.json': [
+            '<%= yeoman.app %>/scripts/**/locale-es.json',
+            '<%= yeoman.app %>/i18n/locale-es.json'
+          ],
+          '<%= yeoman.app %>/i18n/locale_parse-ca.json': [
+            '<%= yeoman.app %>/scripts/**/locale-ca.json',
+            '<%= yeoman.app %>/i18n/locale-ca.json'
+          ]
+        }
+      }
+    },
+
+    // Release config
+    release: {
+      options: {
+        bump: true, //default: true
+        changelog: false, //default: false
+        // changelogText: '<%= version %>\n', //default: '### <%= version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n'
+        file: 'package.json', //default: package.json
+        additionalFiles: ['bower.json'],
+        add: false, //default: true
+        commit: false, //default: true
+        tag: false, //default: true
+        push: false, //default: true
+        pushTags: false, //default: true
+        npm: false, //default: true
+        npmtag: false, //default: no tag
+        indentation: '  ', //default: '  ' (two spaces)
+        // folder: 'folder/to/publish/to/npm', //default project root
+        // tagName: 'some-tag-<%= version %>', //default: '<%= version %>'
+        // commitMessage: 'check out my release <%= version %>', //default: 'release <%= version %>'
+        // tagMessage: 'tagging version <%= version %>', //default: 'Version <%= version %>',
+        beforeBump: [], // optional grunt tasks to run before file versions are bumped
+        afterBump: [], // optional grunt tasks to run after file versions are bumped
+        beforeRelease: [], // optional grunt tasks to run after release version is bumped up but before release is packaged
+        afterRelease: [], // optional grunt tasks to run after release is packaged
+        updateVars: [], // optional grunt config objects to update (this will update/set the version property on the object specified)
+        // github: {
+        //   apiRoot: 'https://git.example.com/v3', // Default: https://github.com
+        //   repo: 'geddski/grunt-release', //put your user/repo here
+        //   accessTokenVar: 'GITHUB_ACCESS_TOKE', //ENVIRONMENT VARIABLE that contains GitHub Access Token
+        //
+        //   // Or you can use username and password env variables, we discourage you to do so
+        //   usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains GitHub username
+        //   passwordVar: 'GITHUB_PASSWORD' //ENVIRONMENT VARIABLE that contains GitHub password
+        // }
+      }
+    },
+
   });
 
+  grunt.registerTask('test', [
+    'clean:server',
+    // 'wiredep',
+    // 'injector',
+    'includes',
+    'concurrent:test',
+    'postcss',
+    'connect:test',
+    'karma'
+  ]);
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function(target) {
     if (target === 'dist') {
@@ -586,11 +834,14 @@ module.exports = function(grunt) {
 
     grunt.task.run([
       'clean:server',
-      'wiredep',
-      'injector',
+      // 'wiredep',
+      // 'injector',
+      'release:patch',
+      'includes',
+      'merge-json',
       'concurrent:server',
       'postcss:server',
-      'connect:livereload',
+      // 'connect:livereload',
       'concurrent:watch',
     ]);
   });
@@ -600,20 +851,25 @@ module.exports = function(grunt) {
     grunt.task.run(['serve:' + target]);
   });
 
-  grunt.registerTask('test', [
-    'clean:server',
-    'wiredep',
-    'injector',
-    'concurrent:test',
-    'postcss',
-    'connect:test',
-    'karma'
-  ]);
+  grunt.registerTask('installer', ['installer:64']);
+  grunt.registerTask('installer:64', ['run:installer64']);
 
-  grunt.registerTask('build', [
+  // grunt.registerTask('merge-json', ['merge-json']);
+  grunt.registerTask('obfuscate', ['jsObfuscate:scripts']);
+  grunt.registerTask('obfuscate:vendor', ['jsObfuscate:vendor']);
+  // grunt.registerTask('closure', ['closure-compiler']);
+  // grunt.registerTask('css', ['useminPrepare', 'cssmin']);
+  grunt.registerTask('min', ['usemin:js']);
+  grunt.registerTask('dist', ['_build', 'min']);
+  grunt.registerTask('build', ['_build', 'min']);
+
+  grunt.registerTask('_build', [
     'clean:dist',
-    'wiredep',
-    'injector',
+    // 'wiredep',
+    // 'injector',
+    'release:minor',
+    'includes',
+    'merge-json',
     'useminPrepare',
     'concurrent:dist',
     'postcss',
@@ -621,10 +877,13 @@ module.exports = function(grunt) {
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
-    'cssmin',
+    // 'cdnify',
+    'cssmin:generated',
+    'cssmin:dist',
     'uglify',
-    'filerev',
+    // 'closure-compiler',
+    'obfuscate',
+    // 'filerev',
     'usemin',
     'htmlmin'
   ]);
@@ -634,5 +893,10 @@ module.exports = function(grunt) {
     'newer:jscs',
     'test',
     'build'
+  ]);
+
+  grunt.registerTask('includes', [
+    'wiredep',
+    'injector'
   ]);
 };

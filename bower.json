@@ -1,9 +1,11 @@
 {
-  "name": "Procedimientos",
+  "name": "ElectronApp",
+  "version": "0.2.2",
   "private": true,
   "dependencies": {
     "angular": "^1.*",
     "bootstrap": "^3.*",
+    "angular-bootstrap": "*",
     "angular-animate": "^1.*",
     "angular-aria": "^1.*",
     "angular-cookies": "^1.*",
@@ -12,29 +14,26 @@
     "angular-i18n": "*",
     "angular-dynamic-locale": "*",
     "angular-resource": "^1.*",
-    "angular-route": "^1.*",
+    "angular-ui-router": "^0.*",
     "angular-sanitize": "^1.*",
     "angular-translate": "*",
     "angular-translate-loader-static-files": "*",
     "angular-translate-storage-cookie": "*",
     "angular-translate-storage-local": "*",
     "angular-recursion": "*",
-    "angular-file-upload": "*",
-    "font-awesome": "*",
-    "animate.css": "*",
-    "components-font-awesome": "*",
     "sanitize-css": "*",
     "normalize-css": "normalize.css#*",
     "angular-local-storage": "*",
-    "ng-dialog": "*",
-    "angular-smart-table": "*",
-    "awesome-bootstrap-checkbox": "*"
+    "angular-material": "*",
+    "lf-ng-md-file-input": "*",
+    "mdi": "*",
+    "angular-smart-table": "*"
   },
   "devDependencies": {
     "angular-mocks": "^1.*"
   },
   "appPath": "app",
-  "moduleName": "procedimientosApp",
+  "moduleName": "electronApp",
   "overrides": {
     "bootstrap": {
       "main": [

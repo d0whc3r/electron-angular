@@ -1,9 +1,26 @@
-/node_modules
-/dist
-/dist-electron
-/.tmp
-/.sass-cache
-/bower_components
-/app/node_modules
-/npm-debug.log
-/app/npm-debug.log
+# Generated
+dist
+dist-electron
+dist-installer
+.tmp
+.sass-cache
+release
+
+# Node & bower
+node_modules
+bower_components
+app/node_modules
+app/bower_components
+
+# Project files
+database
+pdfs
+app/styles/main.css*
+app/i18n/*_parse-*.json
+
+# Other files
+npm-debug.log
+app/npm-debug.log
+.tags
+.tags_swap
+.idea
